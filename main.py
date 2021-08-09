@@ -22,14 +22,16 @@ intent.reactions = True
 client = commands.Bot(command_prefix=prefixes, case_insensitive=True, intents=intent)
 
 quotes = [
-  'you focking gormless asshole', 'you are a stupid weapon who lost the plot', 'chips? you mean crisps?', 'you focking barmy plonker', 'arse licking gannet.', 'mate', 'focking wanker', 'bloody hell tool', 'oi bruv mate, you are looking very dishy today', 'what an absolute spanner', 'you fucking wanker mate', 'im absolutely fuming mate ill fucking murk you man i swear to god', 'are you interested in some T E A?'
+  'you focking gormless asshole', 'you are a stupid weapon who lost the plot', 'chips? you mean crisps?', 'you focking barmy plonker', 'arse licking gannet.', 'mate', 'focking wanker', 'bloody hell tool', 'oi bruv mate, you are looking very dishy today', 'what an absolute spanner', 'you fucking wanker mate', 'im absolutely fuming mate ill fucking murk you man i swear to god', 'are you interested in some tea?'
 ]
+
 
 @tasks.loop(seconds = 1.0)
 async def slow_count():
 	server = client.get_guild(640270238868439071)
 	mizo = server.get_channel(867867528231387146)
 	link = "https://tenor.com/view/happynewyear-2017-gif-7464363"
+	link2 = "https://tenor.com/view/flick-esfand-esfandtv-ricardo-milos-ricardo-flick-gif-13730968"
 	while True:
 		tz_Madrid = pytz.timezone('Europe/Madrid')
 		datetime_Madrid = datetime.now(tz_Madrid)
@@ -37,8 +39,8 @@ async def slow_count():
 		if time == "00:00:00":
 			await mizo.send(link)
 
-		if time == "20:00:00":
-			await mizo.send('https://tenor.com/view/flick-esfand-esfandtv-ricardo-milos-ricardo-flick-gif-13730968')
+		if time == "21:00:00":
+			await mizo.send(link2)
 
 		if time == "21:37:00":
 			await mizo.send("https://i.imgur.com/a5ZHBqq.gif")
@@ -143,19 +145,19 @@ async def register_user(user: discord.User):
 			bank[user.id] = 0
 		json.dump([wallet, bank], file)
 
-async def change_bank(userId: int, mode: str, amount: int):
-	bank = await fetch_bank()
+async def change_bank(userId, mode, amount):
+	money = [await fetch_bank("wallet"), await fetch_bank("bank")]
 	if mode == 'wallet':
 		mode = 0
 	elif mode == 'bank':
 		mode = 1
-	with open("bank.json", "w+") as file:
-		money = bank[mode][userId]
-		bank[mode][userId] = money + amount
-		json.dump(bank, file)
+	with open("bank.json", "w") as file:
+		coins = money[mode][str(userId)]
+		money[mode][str(userId)] = coins + amount
+		json.dump(money, file)
 		return bank
 		
-@client.command(aliases = ['wallet', 'money'])
+@client.command(aliases = ['wallet', 'money', 'bal', 'balance'])
 async def bank(ctx, user = None):
 	if user == None:
 		user = ctx.author
@@ -181,8 +183,14 @@ async def bank(ctx, user = None):
 	em.add_field(name = "bank", value = bank, inline = True)
 	
 	await ctx.send(embed = em)
-	
 
+@client.command()
+async def beg(ctx):
+	await register_user(ctx.author)
+	people = [member.nick for member in ctx.guild.members]
+	coins = random.randint(1, 5)
+	await ctx.send(f'kurwa, {random.choice(people)} gave you {coins} coins')
+	await change_bank(ctx.author.id, 'wallet', coins)
 token = os.environ['DISCORD_BOT_SECRET']
 keep_alive.keep_alive()
 
