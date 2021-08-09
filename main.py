@@ -83,6 +83,8 @@ async def pins(ctx, channel = None):
 		pins = await channel.pins()
 	await ctx.send(f'there are {len(pins)} pins in {channel.name}')
 
+
+
 @client.command()
 async def briish(ctx):
   await ctx.send(f'{random.choice(quotes)}')
@@ -184,14 +186,26 @@ async def bank(ctx, user = None):
 	
 	await ctx.send(embed = em)
 
+@commands.cooldown(1, 10, commands.BucketType.user)
 @client.command()
 async def beg(ctx):
 	await register_user(ctx.author)
 	people = [member.nick for member in ctx.guild.members]
-	coins = random.randint(1, 5)
+	coins = random.randint(1, 50)
 	await ctx.send(f'kurwa, {random.choice(people)} gave you {coins} coins')
 	await change_bank(ctx.author.id, 'wallet', coins)
+
+@beg.error
+async def beg_error(ctx, error):
+    if isinstance(error, discord.ext.commands.errors.CommandOnCooldown):
+        em = discord.Embed(title = "**KURWA COOLDOWN**. <:weirdchamp:643921489074061312>", description = 'COOLDOWN KURRRRWA, CO SPANNER, WAIT **{:.0f}** SECONDS.'.format(error.retry_after), color = discord.Colour.dark_blue())
+        await ctx.send(embed = em)
+    else:
+        raise error
+
+
 token = os.environ['DISCORD_BOT_SECRET']
+
 keep_alive.keep_alive()
 
 client.run(token)
