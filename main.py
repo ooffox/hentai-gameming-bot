@@ -13,10 +13,17 @@ from time import sleep
 import pytz
 from discord.ext import tasks
 
+
+
+
 prefixes = ['kurw ', 'konfident', 'Kurw ', 'kb ', 'Kb ', 'KB ']
 intent = discord.Intents.all()
 intent.reactions = True
 client = commands.Bot(command_prefix=prefixes, case_insensitive=True, intents=intent)
+
+quotes = [
+  'you focking gormless asshole', 'you are a stupid weapon who lost the plot', 'chips? you mean crisps?', 'you focking barmy plonker', 'arse licking gannet.', 'mate', 'focking wanker', 'bloody hell tool', 'oi bruv mate, you are looking very dishy today', 'what an absolute spanner', 'you fucking wanker mate', 'im absolutely fuming mate ill fucking murk you man i swear to god'
+]
 
 @tasks.loop(seconds = 1.0)
 async def slow_count():
@@ -59,6 +66,10 @@ async def pins(ctx, channel = None):
 		channel = ctx.channel
 		pins = await channel.pins()
 	await ctx.send(f'there are {len(pins)} pins in {channel.name}')
+
+@client.command()
+async def briish(ctx):
+  await ctx.send(f'{random.choice(quotes)}')
 
 @client.command(aliases = ['chuj', 'pp', 'cock', 'penis'])
 async def dick(ctx, user = None):
