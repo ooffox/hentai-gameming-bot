@@ -73,6 +73,19 @@ async def dick(ctx, user = None):
 	em =  discord.Embed(title = f'{user.nick} CHUJEM KURWA: {len(dick)}cm', description = dick, color = discord.Colour.green())
 	await ctx.send(embed = em)
 
+@client.command()
+async def klucz(ctx, user = None):
+	if user == None:
+		user = ctx.author.name
+	else:
+		res = client.get_user(int(re.search(r'\d+', user).group()))
+		if res != None:
+			user = res # makes it so when the user doesnt mention anyone it doesnt break and when the user does mention someone it shows the nickname
+	percent = random.randint(1, 100)
+	em = discord.Embed(title = f'klucz %', description = f'{user} jest klucz w {percent}% KURWAAAAAAAAAA', color = discord.Colour.red())
+	await ctx.send(embed = em)
+
+
 token = os.environ['DISCORD_BOT_SECRET']
 keep_alive.keep_alive()
 
