@@ -45,7 +45,7 @@ async def slow_count():
         if time == "00:00:00":
             await mizo.send(link)
 
-        if time == "21:00:00":
+        if time == "22:15:00":
             await mizo.send(link2)
 
         if time == "21:37:00":
@@ -81,7 +81,6 @@ async def pis(ctx):
         )
     if "nie" in response.content.lower():
         await ctx.send(f'Szanuje cie kolego, pis to klucz i trzeba go jebac!')
-
 
 
 @client.command()
@@ -173,12 +172,14 @@ async def register_user(userId):
         json.dump([wallet, bank], file)
 
 
-async def change_bank(userId, mode, amount):
+async def change_bank(userId, mode, amount, debt = True):
     money = [await fetch_bank("wallet"), await fetch_bank("bank")]
     if mode == 'wallet':
         mode = 0
     elif mode == 'bank':
         mode = 1
+    if mode == 1 and debt:
+        amount = amount * 0.8
     with open("bank.json", "w") as file:
         coins = money[mode][str(userId)]
         money[mode][str(userId)] = coins + amount
@@ -186,42 +187,42 @@ async def change_bank(userId, mode, amount):
         return bank
 
 async def below_debt_limit(userId):
-	wallet = await fetch_bank('wallet', userId)
-	if wallet < -10000:
-		return True
-	return False
+    wallet = await fetch_bank('wallet', userId)
+    if wallet < -10000:
+        return True
+    return False
 
 
 @client.command(aliases = ['with'])
 async def withdraw(ctx, amount = None):
-	if amount == None or int(amount) <= 0:
-		await ctx.send('kurwa give me an amount')
-		return
-	await register_user(ctx.author.id)
-	amount = int(amount)
-	bank = await fetch_bank('bank', ctx.author.id)
-	if amount > bank:
-		await ctx.send('kurwa dont try to withdraw more than the current money in your bank')
-		return
-	await change_bank(ctx.author.id, 'wallet', amount)
-	await change_bank(ctx.author.id, 'bank', -amount)
-	await ctx.send(f'succesfully withdrew **{amount}** coins')
+    if amount == None or int(amount) <= 0:
+        await ctx.send('kurwa give me an amount')
+        return
+    await register_user(ctx.author.id)
+    amount = int(amount)
+    bank = await fetch_bank('bank', ctx.author.id)
+    if amount > bank:
+        await ctx.send('kurwa dont try to withdraw more than the current money in your bank')
+        return
+    await change_bank(ctx.author.id, 'wallet', amount)
+    await change_bank(ctx.author.id, 'bank', -amount)
+    await ctx.send(f'succesfully withdrew **{amount}** coins')
 
 
 @client.command(aliases = ['dep'])
 async def deposit(ctx, amount = None):
-	if amount == None or int(amount) <= 0:
-		await ctx.send('kurwa give me an amount')
-		return
-	await register_user(ctx.author.id)
-	amount = int(amount)
-	wallet = await fetch_bank('wallet', ctx.author.id)
-	if amount > wallet:
-		await ctx.send('kurwa dont try to deposit more than the current money in your wallet')
-		return
-	await change_bank(ctx.author.id, 'bank', amount)
-	await change_bank(ctx.author.id, 'wallet', -amount)
-	await ctx.send(f'succesfully deposited {amount} coins')
+    if amount == None or int(amount) <= 0:
+        await ctx.send('kurwa give me an amount')
+        return
+    await register_user(ctx.author.id)
+    amount = int(amount)
+    wallet = await fetch_bank('wallet', ctx.author.id)
+    if amount > wallet:
+        await ctx.send('kurwa dont try to deposit more than the current money in your wallet')
+        return
+    await change_bank(ctx.author.id, 'bank', amount)
+    await change_bank(ctx.author.id, 'wallet', -amount)
+    await ctx.send(f'succesfully deposited {amount} coins')
 
 
 @client.command(aliases=['wallet', 'money', 'bal', 'balance'])
@@ -284,6 +285,9 @@ async def bet(ctx, amount: int):
     if amount <= 0:
         await ctx.send('kurwa stop pierdoling')
         return
+    if amount > 1000:
+        await ctx.send('dont bet more than 1000 coins kurwa')
+        return
 
     chance = random.randint(1, 10)
     if chance <= 5:
@@ -317,6 +321,11 @@ async def bet(ctx, amount: int):
     await ctx.send(embed=em)
 
     await change_bank(ctx.author.id, 'wallet', coins)
+    below_debt = await below_debt_limit(ctx.author.id)
+    if below_debt:
+        await ctx.send('you went below the debt limit of 10000 kurwa, you lost all your coins and items')
+        await change_bank(ctx.author.id, 'wallet', -wallet)
+        await change_bank(ctx.author.id, 'bank', -bank)
 
 token = os.environ['DISCORD_BOT_SECRET']
 
