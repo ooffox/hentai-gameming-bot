@@ -20,6 +20,9 @@ client = commands.Bot(command_prefix=prefixes,
                       case_insensitive=True,
                       intents=intent)
 
+
+
+client.remove_command('help')
 quotes = [
     'you focking gormless asshole',
     'you are a stupid weapon who lost the plot', 'chips? you mean crisps?',
@@ -34,29 +37,30 @@ quotes = [
 
 @tasks.loop(seconds=1.0)
 async def slow_count():
-    server = client.get_guild(640270238868439071)
-    mizo = server.get_channel(867867528231387146)
-    link = "https://tenor.com/view/happynewyear-2017-gif-7464363"
-    link2 = "https://tenor.com/view/flick-esfand-esfandtv-ricardo-milos-ricardo-flick-gif-13730968"
-    tz_Madrid = pytz.timezone('Europe/Madrid')
-    datetime_Madrid = datetime.now(tz_Madrid)
-    time = datetime_Madrid.strftime("%H:%M:%S")
-    if time == "00:00:00":
-        await mizo.send(link)
-
-    if time == "22:15:00":
-        await mizo.send(link2)
-
-    if time == "21:37:00":
-        await mizo.send("https://i.imgur.com/a5ZHBqq.gif")
-
-    elif time == "21:38:00":
-        await mizo.send("https://i.imgur.com/Tg1hp5N.gif")
-
-    elif time.endswith("00") and not time.startswith("21:37"):
-        chances = random.randint(1, 720)
-        if chances == 1:
-            await mizo.send(
+	print(1)
+	server = client.get_guild(640270238868439071)
+	mizo = server.get_channel(867867528231387146)
+	link = "https://tenor.com/view/happynewyear-2017-gif-7464363"
+	link2 = "https://tenor.com/view/flick-esfand-esfandtv-ricardo-milos-ricardo-flick-gif-13730968"
+	tz_Madrid = pytz.timezone('Europe/Madrid')
+	datetime_Madrid = datetime.now(tz_Madrid)
+	time = datetime_Madrid.strftime("%H:%M:%S")
+	if time == "00:00:00":
+		await mizo.send(link)
+		
+	if time == "22:15:00":
+		await mizo.send(link2)
+	
+	if time == "21:37:00":
+		await mizo.send("https://i.imgur.com/a5ZHBqq.gif")
+		
+	elif time == "21:38:00":
+		await mizo.send("https://i.imgur.com/Tg1hp5N.gif")
+		
+	elif time.endswith("00") and not time.startswith("21:37"):
+		chances = random.randint(1, 720)
+		if chances == 1:
+			await mizo.send(
                     "https://tenor.com/view/jp2gmd-polishpope-papaj-papiez-papiesz-gif-8449013"
                 )
 
@@ -277,7 +281,7 @@ async def beg_error(ctx, error):
 
 
 @client.command(aliases=['gamble'], help = 'gambles a certain amount of money')
-async def bet(ctx, amount: int):
+async def bet(ctx, amount: int = 0):
     await register_user(ctx.author.id)
     bank = await fetch_bank('bank', ctx.author.id)
     wallet = await fetch_bank('wallet', ctx.author.id)
