@@ -179,9 +179,9 @@ async def bank(ctx, user = None):
 	bank = await fetch_bank("bank", user.id)
 	wallet = await fetch_bank("wallet", user.id)
 
-	em = discord.Embed(title = f'bank of {user.name} kurwa')
+	em = discord.Embed(title = f'bank of {user.name} kurwa', color = discord.Colour.blurple())
 
-	em.add_field(name = "wallet", value = wallet, inline = True)
+	em.add_field(name = "wallet", value = int(wallet), inline = True)
 	em.add_field(name = "bank", value = bank, inline = True)
 	
 	await ctx.send(embed = em)
@@ -203,6 +203,41 @@ async def beg_error(ctx, error):
     else:
         raise error
 
+@commands.cooldown(1, 10, commands.BucketType.user)
+@client.command(aliases = ['gamble'])
+async def bet(ctx, amount: int):
+	await register_user(ctx.author)
+	bank = await fetch_bank('bank', ctx.author.id)
+	wallet = await fetch_bank('wallet', ctx.author.id)
+	if amount <= 0:
+		await ctx.send('kurwa stop pierdoling')
+		return
+	
+	chance = random.randint(1, 10)
+	if chance <= 5:
+		coins = -round(amount * 2.35)
+
+		em = discord.Embed(title = f'kurwa {ctx.author.nick} lost bet :peeposad:', color = discord.Colour.red())
+
+		em.add_field(name = "amount bet", value = amount, inline = True)
+
+		em.add_field(name = "amount lost", value = coins, inline = True)
+
+		em.add_field(name = "current wallet + bank amount", value = int(wallet + bank + coins), inline = True)
+	elif chance > 5:
+		coins = round(amount * 2.35)
+
+		em = discord.Embed(title = f'kurwa {ctx.author.nick} won bet :peepohappy:', color = discord.Colour.green())
+
+		em.add_field(name = "amount bet", value = amount, inline = True)
+
+		em.add_field(name = "amount won", value = coins, inline = True)
+
+		em.add_field(name = "current wallet + bank amount", value = int(wallet + bank + coins), inline = True)
+	await ctx.send(embed = em)
+
+
+	await change_bank(ctx.author.id, 'wallet', coins)
 
 token = os.environ['DISCORD_BOT_SECRET']
 
