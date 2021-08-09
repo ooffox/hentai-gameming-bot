@@ -22,7 +22,7 @@ intent.reactions = True
 client = commands.Bot(command_prefix=prefixes, case_insensitive=True, intents=intent)
 
 quotes = [
-  'you focking gormless asshole', 'you are a stupid weapon who lost the plot', 'chips? you mean crisps?', 'you focking barmy plonker', 'arse licking gannet.', 'mate', 'focking wanker', 'bloody hell tool', 'oi bruv mate, you are looking very dishy today', 'what an absolute spanner', 'you fucking wanker mate', 'im absolutely fuming mate ill fucking murk you man i swear to god'
+  'you focking gormless asshole', 'you are a stupid weapon who lost the plot', 'chips? you mean crisps?', 'you focking barmy plonker', 'arse licking gannet.', 'mate', 'focking wanker', 'bloody hell tool', 'oi bruv mate, you are looking very dishy today', 'what an absolute spanner', 'you fucking wanker mate', 'im absolutely fuming mate ill fucking murk you man i swear to god', 'are you interested in some T E A?'
 ]
 
 @tasks.loop(seconds = 1.0)
@@ -37,9 +37,12 @@ async def slow_count():
 		if time == "00:00:00":
 			await mizo.send(link)
 
+		if time == "20:00:00":
+			await mizo.send('https://tenor.com/view/flick-esfand-esfandtv-ricardo-milos-ricardo-flick-gif-13730968')
+
 		if time == "21:37:00":
 			await mizo.send("https://i.imgur.com/a5ZHBqq.gif")
-
+    
 		elif time == "21:38:00":
 			await mizo.send("https://i.imgur.com/Tg1hp5N.gif")
 
@@ -98,18 +101,86 @@ async def dick(ctx, user = None):
 @client.command()
 async def klucz(ctx, user = None):
 	if user == None:
-		user = ctx.author.name
+		user = ctx.author
 	else:
 		res = client.get_user(int(re.search(r'\d+', user).group()))
 		if res != None:
 			user = res # makes it so when the user doesnt mention anyone it doesnt break and when the user does mention someone it shows the nickname
 	percent = random.randint(1, 100)
-	em = discord.Embed(title = f'klucz %', description = f'{user} jest klucz w {percent}% KURWAAAAAAAAAA', color = discord.Colour.red())
+	em = discord.Embed(title = f'klucz %', description = f'{user.nick} jest klucz w {percent}% KURWAAAAAAAAAA', color = discord.Colour.red())
 	await ctx.send(embed = em)
 
 
+async def fetch_bank(mode = None, userId = None):
+	mode = mode.lower() if mode else None
 
+	if mode == 'wallet':
+		mode = 0
+	elif mode == 'bank':
+		mode = 1
 	
+
+	with open("bank.json", "r") as file:
+		bank = json.load(file)
+
+	if userId == None and mode == None:
+		return bank
+	
+	if userId == None:
+		return bank[mode]
+	
+	return bank[mode][str(userId)]
+
+async def register_user(user: discord.User):
+	wallet = await fetch_bank('wallet')
+	bank = await fetch_bank('bank')
+	with open("bank.json", 'w') as file:
+		try:
+			wallet[str(user.id)]
+			bank[str(user.id)]
+		except KeyError:
+			wallet[user.id] = 0
+			bank[user.id] = 0
+		json.dump([wallet, bank], file)
+
+async def change_bank(userId: int, mode: str, amount: int):
+	bank = await fetch_bank()
+	if mode == 'wallet':
+		mode = 0
+	elif mode == 'bank':
+		mode = 1
+	with open("bank.json", "w+") as file:
+		money = bank[mode][userId]
+		bank[mode][userId] = money + amount
+		json.dump(bank, file)
+		return bank
+		
+@client.command(aliases = ['wallet', 'money'])
+async def bank(ctx, user = None):
+	if user == None:
+		user = ctx.author
+	else:
+		res = client.get_user(int(re.search(r'\d+', user).group()))
+		if res != None:
+			user = res
+		else:
+			user = find(lambda m: user in m.name.lower(), ctx.guild.members())
+			if user == None:
+				await ctx.send('kurwa that user doesnt exist')
+				return # this is all just a username check
+
+
+	await register_user(user)
+
+	bank = await fetch_bank("bank", user.id)
+	wallet = await fetch_bank("wallet", user.id)
+
+	em = discord.Embed(title = f'bank of {user.name} kurwa')
+
+	em.add_field(name = "wallet", value = wallet, inline = True)
+	em.add_field(name = "bank", value = bank, inline = True)
+	
+	await ctx.send(embed = em)
 	
 
 token = os.environ['DISCORD_BOT_SECRET']
