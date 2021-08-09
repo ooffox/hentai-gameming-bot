@@ -50,10 +50,10 @@ async def pins(ctx, channel = None):
 	if not channel:
 		channel = ctx.channel
 	else:
-		channel = find(lambda m: m.name.lower() == channel, ctx.guild.text_channels)
+		channel = find(lambda m: m.name.lower() == channel, ctx.guild.text_channels) #finds channel with the name input by the user
 
 	
-	if channel:
+	if channel: #checks whether or not a channel with that name was found
 		pins = await channel.pins()
 	else:
 		channel = ctx.channel
@@ -64,14 +64,16 @@ async def pins(ctx, channel = None):
 async def dick(ctx, user = None):
 	if user == None:
 		user = ctx.author.name
-	elif client.get_user(int(re.search(r'\d+', user).group())):
-		user = client.get_user(int(re.search(r'\d+', user).group())).name
+	else:
+		res = client.get_user(int(re.search(r'\d+', user).group()))#fetches all integers from "user", basically because when you mention someone discord takes it as <@(user_id)> so its basically to fetch the user id when its a mention
+		
+		if res != None: #if a user was found
+			user = res
 	dick = f'8{"".join(["=" for i in range(random.randint(1, 25))])}D'
-	em =  discord.Embed(title = f'{user} CHUJEM KURWA: {len(dick)}cm', description = dick, color = discord.Colour.green())
+	em =  discord.Embed(title = f'{user.nick} CHUJEM KURWA: {len(dick)}cm', description = dick, color = discord.Colour.green())
 	await ctx.send(embed = em)
 
-
-token = os.environ.get("DISCORD_BOT_SECRET")
+token = os.environ['DISCORD_BOT_SECRET']
 keep_alive.keep_alive()
 
 client.run(token)
