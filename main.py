@@ -38,26 +38,25 @@ async def slow_count():
     mizo = server.get_channel(867867528231387146)
     link = "https://tenor.com/view/happynewyear-2017-gif-7464363"
     link2 = "https://tenor.com/view/flick-esfand-esfandtv-ricardo-milos-ricardo-flick-gif-13730968"
-    while True:
-        tz_Madrid = pytz.timezone('Europe/Madrid')
-        datetime_Madrid = datetime.now(tz_Madrid)
-        time = datetime_Madrid.strftime("%H:%M:%S")
-        if time == "00:00:00":
-            await mizo.send(link)
+    tz_Madrid = pytz.timezone('Europe/Madrid')
+    datetime_Madrid = datetime.now(tz_Madrid)
+    time = datetime_Madrid.strftime("%H:%M:%S")
+    if time == "00:00:00":
+        await mizo.send(link)
 
-        if time == "22:15:00":
-            await mizo.send(link2)
+    if time == "22:15:00":
+        await mizo.send(link2)
 
-        if time == "21:37:00":
-            await mizo.send("https://i.imgur.com/a5ZHBqq.gif")
+    if time == "21:37:00":
+        await mizo.send("https://i.imgur.com/a5ZHBqq.gif")
 
-        elif time == "21:38:00":
-            await mizo.send("https://i.imgur.com/Tg1hp5N.gif")
+    elif time == "21:38:00":
+        await mizo.send("https://i.imgur.com/Tg1hp5N.gif")
 
-        elif time.endswith("00") and not time.startswith("21:37"):
-            chances = random.randint(1, 720)
-            if chances == 1:
-                await mizo.send(
+    elif time.endswith("00") and not time.startswith("21:37"):
+        chances = random.randint(1, 720)
+        if chances == 1:
+            await mizo.send(
                     "https://tenor.com/view/jp2gmd-polishpope-papaj-papiez-papiesz-gif-8449013"
                 )
 
@@ -67,7 +66,7 @@ async def on_ready():
     print('konfident mode on')
 
 
-@client.command()
+@client.command(name = 'pis', help = 'jebac pis')
 async def pis(ctx):
     await ctx.send(f'Czy ty lubić pis?')
 
@@ -83,7 +82,7 @@ async def pis(ctx):
         await ctx.send(f'Szanuje cie kolego, pis to klucz i trzeba go jebac!')
 
 
-@client.command()
+@client.command(name = 'pins', help = 'sends number of pins in channel."')
 async def pins(ctx, channel=None):
     if not channel:
         chanel = ctx.channel
@@ -100,12 +99,12 @@ async def pins(ctx, channel=None):
     await ctx.send(f'there are {len(pins)} pins in {channel.name}')
 
 
-@client.command()
+@client.command(name = "bri'ish?????", help = "sends random bri'ish quote")
 async def briish(ctx):
     await ctx.send(f'{random.choice(quotes)}')
 
 
-@client.command(aliases=['chuj', 'pp', 'cock', 'penis'])
+@client.command(aliases = ['chuj', 'pp', 'cock', 'penis'], help = 'sends dick length. not rigged, it is not my fault your dick is tiny.')
 async def dick(ctx, user=None):
     if user == None:
         user = ctx.author.name
@@ -123,7 +122,7 @@ async def dick(ctx, user=None):
     await ctx.send(embed=em)
 
 
-@client.command()
+@client.command(help = 'klucz percent. not rigged')
 async def klucz(ctx, user=None):
     if user == None:
         user = ctx.author
@@ -193,7 +192,7 @@ async def below_debt_limit(userId):
     return False
 
 
-@client.command(aliases = ['with'])
+@client.command(aliases = ['with'], help = 'withdraws money from bank')
 async def withdraw(ctx, amount = None):
     if amount == None or int(amount) <= 0:
         await ctx.send('kurwa give me an amount')
@@ -209,7 +208,7 @@ async def withdraw(ctx, amount = None):
     await ctx.send(f'succesfully withdrew **{amount}** coins')
 
 
-@client.command(aliases = ['dep'])
+@client.command(aliases = ['dep'], help = 'deposits money in bank')
 async def deposit(ctx, amount = None):
     if amount == None or int(amount) <= 0:
         await ctx.send('kurwa give me an amount')
@@ -225,7 +224,7 @@ async def deposit(ctx, amount = None):
     await ctx.send(f'succesfully deposited {amount} coins')
 
 
-@client.command(aliases=['wallet', 'money', 'bal', 'balance'])
+@client.command(aliases=['wallet', 'money', 'bal', 'balance'], help = 'displays bank and wallet money')
 async def bank(ctx, user=None):
     if user == None:
         user = ctx.author
@@ -254,11 +253,11 @@ async def bank(ctx, user=None):
 
 
 @commands.cooldown(1, 10, commands.BucketType.user)
-@client.command()
+@client.command(help = 'begs random people for money')
 async def beg(ctx):
     await register_user(ctx.author.id)
     people = [member.nick for member in ctx.guild.members]
-    coins = random.randint(1, 50)
+    coins = random.randint(1, 20)
     await ctx.send(f'kurwa, {random.choice(people)} gave you {coins} coins')
     await change_bank(ctx.author.id, 'wallet', coins)
 
@@ -277,7 +276,7 @@ async def beg_error(ctx, error):
         raise error
 
 
-@client.command(aliases=['gamble'])
+@client.command(aliases=['gamble'], help = 'gambles a certain amount of money')
 async def bet(ctx, amount: int):
     await register_user(ctx.author.id)
     bank = await fetch_bank('bank', ctx.author.id)
@@ -326,6 +325,7 @@ async def bet(ctx, amount: int):
         await ctx.send('you went below the debt limit of 10000 kurwa, you lost all your coins and items')
         await change_bank(ctx.author.id, 'wallet', -wallet)
         await change_bank(ctx.author.id, 'bank', -bank)
+
 
 token = os.environ['DISCORD_BOT_SECRET']
 
