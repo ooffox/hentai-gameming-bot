@@ -53,9 +53,20 @@ async def on_ready():
 	print('konfident mode on')
 
 @client.command()
+async def pis(ctx):
+	await ctx.send(f'Czy ty lubić pis?')
+	def check(m):
+		return m.author == ctx.author and m.channel == ctx.channel
+	response = await client.wait_for('message', check=check, timeout = 10.0)
+	if "tak" in response.content.lower():
+		await ctx.send(f'Wyglądasz jakbyś językiem czyścił chodniki z psich gówien ty skurwysyński ośle. Zrobię ci z dupy nieskończoną fontannę gówna. Taplaj sie w kale jebany pedale przerżnięty patałachu wypatroszony przez stado goryli. Masz takiego garba że sznurówki zawiązujesz na stojąco ty łysy bezchuju z mongolii. Ty jebany przez stado goryli lumpie, pchaj wibrator niedomyty cepie!!!!!!! Ściśnij dupe bo ci kał wycieka i zasysaj stolca molestowany pawianie z bazaru. Zryty gerontofilu, dmuchany przez sparaliżowaną azerbejdżańską kurwe. Masz ryj jakby cię w dzieciństwie z procy karmili ty zawszony barani pendzlu z rozjebanej chaty szmaciarza z uzbekistanu :>. Zajebie ci w ten kurwa głupi ryj, aż się porzygasz komunijnym bigosem. Zrobie ci z mordy origami ty trędowaty złamasie :>.')
+	if "nie" in response.content.lower():
+		await ctx.send(f'Szanuje cie kolego, pis to klucz i trzeba go jebac!')
+
+@client.command()
 async def pins(ctx, channel = None):
 	if not channel:
-		channel = ctx.channel
+		chanel = ctx.channel
 	else:
 		channel = find(lambda m: m.name.lower() == channel, ctx.guild.text_channels) #finds channel with the name input by the user
 
@@ -96,6 +107,10 @@ async def klucz(ctx, user = None):
 	em = discord.Embed(title = f'klucz %', description = f'{user} jest klucz w {percent}% KURWAAAAAAAAAA', color = discord.Colour.red())
 	await ctx.send(embed = em)
 
+
+
+	
+	
 
 token = os.environ['DISCORD_BOT_SECRET']
 keep_alive.keep_alive()
