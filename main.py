@@ -10,6 +10,7 @@ import json
 from discord.utils import find
 from datetime import datetime
 from time import sleep
+import time
 import pytz
 from discord.ext import tasks
 
@@ -25,13 +26,18 @@ client = commands.Bot(command_prefix=prefixes,
 client.remove_command('help')
 quotes = [
     'you focking gormless asshole',
-    'you are a stupid weapon who lost the plot', 'chips? you mean crisps?',
+    'you are a stupid weapon who lost the plot', 'chips? you mean scrummy yummy crispy omnommy crisps?',
     'you focking barmy plonker', 'arse licking gannet.', 'mate',
     'focking wanker', 'bloody hell tool',
     'oi bruv mate, you are looking very dishy today',
     'what an absolute spanner', 'you fucking wanker mate',
     'im absolutely fuming mate ill fucking murk you man i swear to god',
-    'are you interested in some tea?'
+    'are you interested in some drinky drinky sweety hot tea?'
+]
+
+
+polish = [
+  'Tak cie kopnę w dupe ze ci gówno kręgosłup połamie >;(', 'Masz ryj jakby cie twój stary niedokończył ty zasyfiały mutancie.', 'Zrobie ci z jaj druty telegraficzne ty zaspermiony wujkojebco z ukrainy.', 'Ty komunistyczny krowi placu, pchany przez własnego starego i muflona w komendzie powiatowej policji.', 'Ruchaj psa jak sra obsmarkany szlaufie pizgany w oko przez muflona w komendzie powiatowej policji.', 'Z okazji tych świąt życze ci dużo rodzynów w dupie, moszne na plecach i żeby cie tata częściej kochał, czyli jakieś 8 razy dziennie, mniej włosów w dupie oraz grzyba na kutasie', 'Zrobie ci tornado na twarzy. Smyraj larwe i gulgaj kondora trędowaty mudżachedinie.', 'Masz ryj jak tłuczek do ziemniaków ty cofnięty w rozwoju odchodzie :>', 'Gulgaj kondora pojebany koguci prąciu wygrzmocony przez ministranta.'
 ]
 
 
@@ -48,7 +54,7 @@ async def slow_count():
 	if time == "00:00:00":
 		await mizo.send(link)
 		
-	if time == "22:15:00":
+	if time == "16:00:00":
 		await mizo.send(link2)
 	
 	if time == "21:37:00":
@@ -64,6 +70,10 @@ async def slow_count():
                     "https://tenor.com/view/jp2gmd-polishpope-papaj-papiez-papiesz-gif-8449013"
                 )
 
+@client.command(name = 'insult', help = 'insult someone in polish')
+async def insult(ctx):
+	pings = [member for member in ctx.guild.members]
+	await ctx.send(f'{random.choice(pings)} {random.choice(polish)}')
 
 @client.event
 async def on_ready():
@@ -89,7 +99,7 @@ async def pis(ctx):
 @client.command(name = 'pins', help = 'sends number of pins in channel."')
 async def pins(ctx, channel=None):
     if not channel:
-        chanel = ctx.channel
+        channel = ctx.channel
     else:
         channel = find(lambda m: m.name.lower() == channel,
                        ctx.guild.text_channels
@@ -103,7 +113,7 @@ async def pins(ctx, channel=None):
     await ctx.send(f'there are {len(pins)} pins in {channel.name}')
 
 
-@client.command(name = "bri'ish?????", help = "sends random bri'ish quote")
+@client.command(name = "bri'ish?????", aliases = ['briish'], help = "sends random bri'ish quote")
 async def briish(ctx):
     await ctx.send(f'{random.choice(quotes)}')
 
@@ -228,6 +238,7 @@ async def deposit(ctx, amount = None):
     await ctx.send(f'succesfully deposited {amount} coins')
 
 
+
 @client.command(aliases=['wallet', 'money', 'bal', 'balance'], help = 'displays bank and wallet money')
 async def bank(ctx, user=None):
     if user == None:
@@ -262,6 +273,8 @@ async def beg(ctx):
     await register_user(ctx.author.id)
     people = [member.nick for member in ctx.guild.members]
     coins = random.randint(1, 20)
+    await ctx.send(f'begging in progress kurwa')
+    time.sleep(2)
     await ctx.send(f'kurwa, {random.choice(people)} gave you {coins} coins')
     await change_bank(ctx.author.id, 'wallet', coins)
 
@@ -298,7 +311,7 @@ async def bet(ctx, amount: int = 0):
 
         em = discord.Embed(
             title=f'kurwa {ctx.author.nick} lost bet :peeposad:',
-            color=discord.Colour.red())
+            color=discord.Colour.red(), footer = f'amount lost is amount bet * 1.35')
 
         em.add_field(name="amount bet", value=amount, inline=True)
 
@@ -312,7 +325,7 @@ async def bet(ctx, amount: int = 0):
 
         em = discord.Embed(
             title=f'kurwa {ctx.author.nick} won bet :peepohappy:',
-            color=discord.Colour.green())
+            color=discord.Colour.green(), footer = f'amount won is amount bet * 1.35')
 
         em.add_field(name="amount bet", value=amount, inline=True)
 
@@ -329,6 +342,45 @@ async def bet(ctx, amount: int = 0):
         await ctx.send('you went below the debt limit of 10000 kurwa, you lost all your coins and items')
         await change_bank(ctx.author.id, 'wallet', -wallet)
         await change_bank(ctx.author.id, 'bank', -bank)
+
+@client.command()
+async def dice(ctx, amount: int = 0):
+  await register_user(ctx.author.id)
+  bank = await fetch_bank('bank', ctx.author.id)
+  wallet = await fetch_bank('wallet',ctx.author.id)
+  if amount <=0:
+    await ctx.send('wtf weapon kurwa')
+    return
+  userdice = random.randint(1, 10)
+  dudadice = random.randint(1, 10)
+  if userdice > dudadice:
+    money = round(amount * 1.35)
+    em = discord.Embed(
+      title=f'brawo kutafonie! {ctx.author.nick} won bet!',
+      color=discord.Colour.green())
+    em.add_field(name="Andrzej Dupa", value=dudadice, inline=True)
+
+    em.add_field(name="You", value=userdice, inline=True)
+    
+    em.add_field(name="amount bet", value=amount, inline=True)
+
+    em.add_field(name="amount won", value=money, inline=True)
+  elif dudadice > userdice:
+    money = -round(amount * 1.35)
+    em = discord.Embed(
+      title=f'kurwa i won! {ctx.author.nick} lost bet!',
+      color=discord.Colour.red())
+    em.add_field(name="Andrzej Dupa", value=dudadice, inline=True)
+
+    em.add_field(name="You", value=userdice, inline=True)
+
+    em.add_field(name="amount bet", value=amount, inline=True)
+
+    em.add_field(name="amount lost", value=money, inline=True)
+  await ctx.send(embed=em)
+
+  await change_bank(ctx.author.id, 'wallet', money)
+
 
 
 token = os.environ['DISCORD_BOT_SECRET']
