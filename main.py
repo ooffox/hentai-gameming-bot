@@ -43,37 +43,37 @@ polish = [
 
 @tasks.loop(seconds=1.0)
 async def slow_count():
-	print(1)
-	server = client.get_guild(640270238868439071)
-	mizo = server.get_channel(867867528231387146)
-	link = "https://tenor.com/view/happynewyear-2017-gif-7464363"
-	link2 = "https://tenor.com/view/flick-esfand-esfandtv-ricardo-milos-ricardo-flick-gif-13730968"
-	tz_Madrid = pytz.timezone('Europe/Madrid')
-	datetime_Madrid = datetime.now(tz_Madrid)
-	time = datetime_Madrid.strftime("%H:%M:%S")
-	if time == "00:00:00":
-		await mizo.send(link)
-		
-	if time == "16:00:00":
-		await mizo.send(link2)
-	
-	if time == "21:37:00":
-		await mizo.send("https://i.imgur.com/a5ZHBqq.gif")
-		
-	elif time == "21:38:00":
-		await mizo.send("https://i.imgur.com/Tg1hp5N.gif")
-		
-	elif time.endswith("00") and not time.startswith("21:37"):
-		chances = random.randint(1, 720)
-		if chances == 1:
-			await mizo.send(
+    print(1)
+    server = client.get_guild(640270238868439071)
+    mizo = server.get_channel(867867528231387146)
+    link = "https://tenor.com/view/happynewyear-2017-gif-7464363"
+    link2 = "https://tenor.com/view/flick-esfand-esfandtv-ricardo-milos-ricardo-flick-gif-13730968"
+    tz_Madrid = pytz.timezone('Europe/Madrid')
+    datetime_Madrid = datetime.now(tz_Madrid)
+    time = datetime_Madrid.strftime("%H:%M:%S")
+    if time == "00:00:00":
+        await mizo.send(link)
+        
+    if time == "16:00:00":
+        await mizo.send(link2)
+    
+    if time == "21:37:00":
+        await mizo.send("https://i.imgur.com/a5ZHBqq.gif")
+        
+    elif time == "21:38:00":
+        await mizo.send("https://i.imgur.com/Tg1hp5N.gif")
+        
+    elif time.endswith("00") and not time.startswith("21:37"):
+        chances = random.randint(1, 720)
+        if chances == 1:
+            await mizo.send(
                     "https://tenor.com/view/jp2gmd-polishpope-papaj-papiez-papiesz-gif-8449013"
                 )
 
 @client.command(name = 'insult', help = 'insult someone in polish')
 async def insult(ctx):
-	pings = [member for member in ctx.guild.members]
-	await ctx.send(f'{random.choice(pings)} {random.choice(polish)}')
+    pings = [member for member in ctx.guild.members]
+    await ctx.send(f'{random.choice(pings)} {random.choice(polish)}')
 
 @client.event
 async def on_ready():
@@ -169,7 +169,7 @@ async def fetch_bank(mode=None, userId=None):
     if userId == None:
         return bank[mode]
 
-    return bank[mode][str(userId)]
+    return int(bank[mode][str(userId)])
 
 
 async def register_user(userId):
@@ -235,7 +235,7 @@ async def deposit(ctx, amount = None):
         return
     await change_bank(ctx.author.id, 'bank', amount)
     await change_bank(ctx.author.id, 'wallet', -amount)
-    await ctx.send(f'succesfully deposited {amount} coins')
+    await ctx.send(f'succesfully deposited **{amount}** coins')
 
 
 
@@ -293,6 +293,7 @@ async def beg_error(ctx, error):
         raise error
 
 
+
 @client.command(aliases=['gamble'], help = 'gambles a certain amount of money')
 async def bet(ctx, amount: int = 0):
     await register_user(ctx.author.id)
@@ -311,7 +312,7 @@ async def bet(ctx, amount: int = 0):
 
         em = discord.Embed(
             title=f'kurwa {ctx.author.nick} lost bet :peeposad:',
-            color=discord.Colour.red(), footer = f'amount lost is amount bet * 1.35')
+            color=discord.Colour.red())
 
         em.add_field(name="amount bet", value=amount, inline=True)
 
@@ -325,7 +326,7 @@ async def bet(ctx, amount: int = 0):
 
         em = discord.Embed(
             title=f'kurwa {ctx.author.nick} won bet :peepohappy:',
-            color=discord.Colour.green(), footer = f'amount won is amount bet * 1.35')
+            color=discord.Colour.green())
 
         em.add_field(name="amount bet", value=amount, inline=True)
 
@@ -343,43 +344,14 @@ async def bet(ctx, amount: int = 0):
         await change_bank(ctx.author.id, 'wallet', -wallet)
         await change_bank(ctx.author.id, 'bank', -bank)
 
-@client.command()
-async def dice(ctx, amount: int = 0):
-  await register_user(ctx.author.id)
-  bank = await fetch_bank('bank', ctx.author.id)
-  wallet = await fetch_bank('wallet',ctx.author.id)
-  if amount <=0:
-    await ctx.send('wtf weapon kurwa')
-    return
-  userdice = random.randint(1, 10)
-  dudadice = random.randint(1, 10)
-  if userdice > dudadice:
-    money = round(amount * 1.35)
-    em = discord.Embed(
-      title=f'brawo kutafonie! {ctx.author.nick} won bet!',
-      color=discord.Colour.green())
-    em.add_field(name="Andrzej Dupa", value=dudadice, inline=True)
 
-    em.add_field(name="You", value=userdice, inline=True)
-    
-    em.add_field(name="amount bet", value=amount, inline=True)
-
-    em.add_field(name="amount won", value=money, inline=True)
-  elif dudadice > userdice:
-    money = -round(amount * 1.35)
-    em = discord.Embed(
-      title=f'kurwa i won! {ctx.author.nick} lost bet!',
-      color=discord.Colour.red())
-    em.add_field(name="Andrzej Dupa", value=dudadice, inline=True)
-
-    em.add_field(name="You", value=userdice, inline=True)
-
-    em.add_field(name="amount bet", value=amount, inline=True)
-
-    em.add_field(name="amount lost", value=money, inline=True)
-  await ctx.send(embed=em)
-
-  await change_bank(ctx.author.id, 'wallet', money)
+@client.command(name = 'help', help = 'displays this command')
+async def help(ctx, command = None):
+    if command == None:
+        em = discord.Embed(title = 'HELP', color = discord.Colour.blurple())
+        for command in client.commands:
+            em.add_field(name = command.name, value = command.help)
+    await ctx.send(embed = em)
 
 
 
