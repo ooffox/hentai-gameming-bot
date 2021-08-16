@@ -40,35 +40,10 @@ polish = [
   'Tak cie kopnę w dupe ze ci gówno kręgosłup połamie >;(', 'Masz ryj jakby cie twój stary niedokończył ty zasyfiały mutancie.', 'Zrobie ci z jaj druty telegraficzne ty zaspermiony wujkojebco z ukrainy.', 'Ty komunistyczny krowi placu, pchany przez własnego starego i muflona w komendzie powiatowej policji.', 'Ruchaj psa jak sra obsmarkany szlaufie pizgany w oko przez muflona w komendzie powiatowej policji.', 'Z okazji tych świąt życze ci dużo rodzynów w dupie, moszne na plecach i żeby cie tata częściej kochał, czyli jakieś 8 razy dziennie, mniej włosów w dupie oraz grzyba na kutasie', 'Zrobie ci tornado na twarzy. Smyraj larwe i gulgaj kondora trędowaty mudżachedinie.', 'Masz ryj jak tłuczek do ziemniaków ty cofnięty w rozwoju odchodzie :>', 'Gulgaj kondora pojebany koguci prąciu wygrzmocony przez ministranta.'
 ]
 
-
-@tasks.loop(seconds=1.0)
-async def slow_count():
-    print(1)
-    server = client.get_guild(640270238868439071)
-    mizo = server.get_channel(867867528231387146)
-    link = "https://tenor.com/view/happynewyear-2017-gif-7464363"
-    link2 = "https://tenor.com/view/flick-esfand-esfandtv-ricardo-milos-ricardo-flick-gif-13730968"
-    tz_Madrid = pytz.timezone('Europe/Madrid')
-    datetime_Madrid = datetime.now(tz_Madrid)
-    time = datetime_Madrid.strftime("%H:%M:%S")
-    if time == "00:00:00":
-        await mizo.send(link)
-        
-    if time == "16:00:00":
-        await mizo.send(link2)
-    
-    if time == "21:37:00":
-        await mizo.send("https://i.imgur.com/a5ZHBqq.gif")
-        
-    elif time == "21:38:00":
-        await mizo.send("https://i.imgur.com/Tg1hp5N.gif")
-        
-    elif time.endswith("00") and not time.startswith("21:37"):
-        chances = random.randint(1, 720)
-        if chances == 1:
-            await mizo.send(
-                    "https://tenor.com/view/jp2gmd-polishpope-papaj-papiez-papiesz-gif-8449013"
-                )
+@client.event
+async def on_message_delete(message):
+    if (message.guild.id == 571036743382597643) and (message.author.id == 647164565817393168 or message.author.id == 852634711625039882):
+        await message.channel.send(message.content)
 
 @client.command(name = 'insult', help = 'insult someone in polish')
 async def insult(ctx):
