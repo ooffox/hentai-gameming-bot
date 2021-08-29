@@ -5,7 +5,7 @@ app = Flask("")
 
 @app.route('/')
 def main():
-  return "haha yes, pedofil time"
+  return "pedofil time"
 
 def run():
     app.run(host="0.0.0.0", port=8080)

@@ -10,7 +10,6 @@ import json
 from discord.utils import find
 from datetime import datetime
 from time import sleep
-import time
 import pytz
 from discord.ext import tasks
 
@@ -26,33 +25,45 @@ client = commands.Bot(command_prefix=prefixes,
 client.remove_command('help')
 quotes = [
     'you focking gormless asshole',
-    'you are a stupid weapon who lost the plot', 'chips? you mean scrummy yummy crispy omnommy crisps?',
+    'you are a stupid weapon who lost the plot', 'chips? you mean crisps?',
     'you focking barmy plonker', 'arse licking gannet.', 'mate',
     'focking wanker', 'bloody hell tool',
     'oi bruv mate, you are looking very dishy today',
     'what an absolute spanner', 'you fucking wanker mate',
     'im absolutely fuming mate ill fucking murk you man i swear to god',
-    'are you interested in some drinky drinky sweety hot tea?'
+    'are you interested in some tea?'
 ]
 
 
-polish = [
-  'Tak cie kopnę w dupe ze ci gówno kręgosłup połamie >;(', 'Masz ryj jakby cie twój stary niedokończył ty zasyfiały mutancie.', 'Zrobie ci z jaj druty telegraficzne ty zaspermiony wujkojebco z ukrainy.', 'Ty komunistyczny krowi placu, pchany przez własnego starego i muflona w komendzie powiatowej policji.', 'Ruchaj psa jak sra obsmarkany szlaufie pizgany w oko przez muflona w komendzie powiatowej policji.', 'Z okazji tych świąt życze ci dużo rodzynów w dupie, moszne na plecach i żeby cie tata częściej kochał, czyli jakieś 8 razy dziennie, mniej włosów w dupie oraz grzyba na kutasie', 'Zrobie ci tornado na twarzy. Smyraj larwe i gulgaj kondora trędowaty mudżachedinie.', 'Masz ryj jak tłuczek do ziemniaków ty cofnięty w rozwoju odchodzie :>', 'Gulgaj kondora pojebany koguci prąciu wygrzmocony przez ministranta.'
-]
+@tasks.loop(seconds=1.0)
+async def send_msg_at_time():
+    server = client.get_guild(640270238868439071)
+    mizo = server.get_channel(867867528231387146)
+    link = "https://tenor.com/view/happynewyear-2017-gif-7464363"
+    tz_Madrid = pytz.timezone('Europe/Madrid')
+    datetime_Madrid = datetime.now(tz_Madrid)
+    time = datetime_Madrid.strftime("%H:%M:%S")
+    if time == "00:00:00":
+        await mizo.send(link)
+    
+    if time == "21:37:00":
+        await mizo.send("https://i.imgur.com/a5ZHBqq.gif")
+    
+    elif time == "21:38:00":
+        await mizo.send("https://i.imgur.com/Tg1hp5N.gif")
+    
+    elif time.endswith("00") and not time.startswith("21:37"):
+        chances = random.randint(1, 720)
+        if chances == 1:
+            await mizo.send(
+                    "https://tenor.com/view/jp2gmd-polishpope-papaj-papiez-papiesz-gif-8449013"
+                )
 
-@client.event
-async def on_message_delete(message):
-    if (message.guild.id == 571036743382597643) and (message.author.id == 647164565817393168 or message.author.id == 852634711625039882):
-        await message.channel.send(message.content)
-
-@client.command(name = 'insult', help = 'insult someone in polish')
-async def insult(ctx):
-    pings = [member for member in ctx.guild.members]
-    await ctx.send(f'{random.choice(pings)} {random.choice(polish)}')
 
 @client.event
 async def on_ready():
     print('konfident mode on')
+    send_msg_at_time.start()
 
 
 @client.command(name = 'pis', help = 'jebac pis')
@@ -74,7 +85,7 @@ async def pis(ctx):
 @client.command(name = 'pins', help = 'sends number of pins in channel."')
 async def pins(ctx, channel=None):
     if not channel:
-        channel = ctx.channel
+        chanel = ctx.channel
     else:
         channel = find(lambda m: m.name.lower() == channel,
                        ctx.guild.text_channels
@@ -88,7 +99,7 @@ async def pins(ctx, channel=None):
     await ctx.send(f'there are {len(pins)} pins in {channel.name}')
 
 
-@client.command(name = "bri'ish?????", aliases = ['briish'], help = "sends random bri'ish quote")
+@client.command(name = "bri'ish?????", help = "sends random bri'ish quote")
 async def briish(ctx):
     await ctx.send(f'{random.choice(quotes)}')
 
@@ -144,7 +155,7 @@ async def fetch_bank(mode=None, userId=None):
     if userId == None:
         return bank[mode]
 
-    return int(bank[mode][str(userId)])
+    return bank[mode][str(userId)]
 
 
 async def register_user(userId):
@@ -210,8 +221,7 @@ async def deposit(ctx, amount = None):
         return
     await change_bank(ctx.author.id, 'bank', amount)
     await change_bank(ctx.author.id, 'wallet', -amount)
-    await ctx.send(f'succesfully deposited **{amount}** coins')
-
+    await ctx.send(f'succesfully deposited {amount} coins')
 
 
 @client.command(aliases=['wallet', 'money', 'bal', 'balance'], help = 'displays bank and wallet money')
@@ -248,8 +258,6 @@ async def beg(ctx):
     await register_user(ctx.author.id)
     people = [member.nick for member in ctx.guild.members]
     coins = random.randint(1, 20)
-    await ctx.send(f'begging in progress kurwa')
-    time.sleep(2)
     await ctx.send(f'kurwa, {random.choice(people)} gave you {coins} coins')
     await change_bank(ctx.author.id, 'wallet', coins)
 
@@ -266,7 +274,6 @@ async def beg_error(ctx, error):
         await ctx.send(embed=em)
     else:
         raise error
-
 
 
 @client.command(aliases=['gamble'], help = 'gambles a certain amount of money')
@@ -318,16 +325,6 @@ async def bet(ctx, amount: int = 0):
         await ctx.send('you went below the debt limit of 10000 kurwa, you lost all your coins and items')
         await change_bank(ctx.author.id, 'wallet', -wallet)
         await change_bank(ctx.author.id, 'bank', -bank)
-
-
-@client.command(name = 'help', help = 'displays this command')
-async def help(ctx, command = None):
-    if command == None:
-        em = discord.Embed(title = 'HELP', color = discord.Colour.blurple())
-        for command in client.commands:
-            em.add_field(name = command.name, value = command.help)
-    await ctx.send(embed = em)
-
 
 
 token = os.environ['DISCORD_BOT_SECRET']
